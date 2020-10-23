@@ -1,5 +1,7 @@
 package utils
 
+import "encoding/json"
+
 // NewSucc 返回一个成功标识的结果格式
 // 推荐使用 Succ
 func NewSucc(msg string, data ...interface{}) (int, Reply) {
@@ -57,4 +59,29 @@ func NewErrSvr(msg string, data ...interface{}) (int, Reply) {
 // NewExt 返回一个其他约定的结果格式
 func NewExt(msg string, data ...interface{}) (int, Reply) {
 	return newReply(stExt, msg, data...)
+}
+
+type Result struct {
+	Code int         `json:"code,omitempty"`
+	Msg  string      `json:"msg,omitempty"`
+	Data interface{} `json:"data,omitempty"`
+}
+
+func NewResult(code int, msg string, data ...interface{}) []byte {
+	if len(data) > 0 {
+		res := Result{
+			Code: code,
+			Msg:  msg,
+			Data: data[0],
+		}
+		buf, _ := json.Marshal(res)
+		return buf
+	} else {
+		res := Result{
+			Code: code,
+			Msg:  msg,
+		}
+		buf, _ := json.Marshal(res)
+		return buf
+	}
 }
